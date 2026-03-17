@@ -1,11 +1,35 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
+// Define the Event type for TypeScript
+interface Event {
+  id: number;
+  title: string;
+  category: string;
+  location: string;
+  eventDatetime: string;
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch from your Spring Boot Backend
+    fetch('http://localhost:8080/api/events')
+      .then(res => res.json())
+      .then(data => {
+        setEvents(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch events:", err);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <>
@@ -16,99 +40,34 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
+          <h1>Browse Events</h1>
+          <p>Active events available for booking</p>
         </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
       </section>
 
       <div className="ticks"></div>
 
       <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+        <div id="docs" style={{ width: '100%' }}>
+          <h2>Available Events</h2>
+          {loading ? (
+            <p>Loading events from database...</p>
+          ) : events.length === 0 ? (
+            <p>No active events found. Add some to your <code>events</code> table!</p>
+          ) : (
+            <div className="event-grid" style={{ display: 'grid', gap: '20px', textAlign: 'left' }}>
+              {events.map(event => (
+                <div key={event.id} className="event-card" style={{ border: '1px solid #444', padding: '15px', borderRadius: '8px' }}>
+                  <h3>{event.title}</h3>
+                  <p>📍 <strong>Location:</strong> {event.location}</p>
+                  <p>📅 <strong>Date:</strong> {event.eventDatetime}</p>
+                  <span className="badge" style={{ background: '#646cff', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8em' }}>
+                    {event.category}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
