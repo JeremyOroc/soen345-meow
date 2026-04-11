@@ -3,6 +3,7 @@ package com.soen345.meow.repository;
 import com.soen345.meow.entity.Event;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -22,4 +23,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                       @Param("location") String location,
                                       @Param("startDate") String startDate,
                                       @Param("endDate") String endDate);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT e FROM Event e WHERE e.id = :id")
+    Optional<Event> findByIdForUpdate(@Param("id") Integer id);
 }
