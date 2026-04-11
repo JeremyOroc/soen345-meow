@@ -2,8 +2,11 @@ package com.soen345.meow;
 
 import com.soen345.meow.entity.Event;
 import com.soen345.meow.entity.Reservation;
+import com.soen345.meow.entity.User;
 import com.soen345.meow.repository.EventRepository;
 import com.soen345.meow.repository.ReservationRepository;
+import com.soen345.meow.repository.UserRepository;
+import com.soen345.meow.service.NotificationService;
 import com.soen345.meow.service.ReservationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +34,12 @@ class ReservationServiceTest {
     @Mock
     private EventRepository eventRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private NotificationService notificationService;
+
     @InjectMocks
     private ReservationService reservationService;
 
@@ -39,13 +49,17 @@ class ReservationServiceTest {
     void setUp() {
         event = new Event();
         event.setId(1);
+        event.setTitle("SOEN Concert");
+        event.setEventDatetime("2026-04-20T20:00:00");
         event.setAvailableSeats(10);
         event.setStatus("ACTIVE");
     }
 
     @Test
     void shouldCreateReservationSuccessfully() {
+        User user = new User("customer@example.com", null, "hash", "CUSTOMER");
         when(eventRepository.findByIdForUpdate(1)).thenReturn(Optional.of(event));
+        when(userRepository.findById(7L)).thenReturn(Optional.of(user));
         when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> {
             Reservation reservation = invocation.getArgument(0);
             reservation.setId(99L);
@@ -62,6 +76,7 @@ class ReservationServiceTest {
 
         verify(eventRepository).save(event);
         verify(reservationRepository).save(any(Reservation.class));
+        verify(notificationService).sendBookingConfirmation(eq("customer@example.com"), eq("SOEN Concert"), anyLong(), any());
     }
 
     @Test
