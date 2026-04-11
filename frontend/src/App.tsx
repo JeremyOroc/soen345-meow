@@ -3,9 +3,11 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import { AuthProvider, useAuth } from './auth/AuthContext'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
 
-// Define the Event type for TypeScript
-interface Event {
+interface EventItem {
   id: number;
   title: string;
   category: string;
@@ -13,12 +15,13 @@ interface Event {
   eventDatetime: string;
 }
 
-function App() {
-  const [events, setEvents] = useState<Event[]>([]);
+function AppContent() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const [currentPage, setCurrentPage] = useState<string>('events');
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch from your Spring Boot Backend
     fetch('http://localhost:8080/api/events')
       .then(res => res.json())
       .then(data => {
@@ -31,8 +34,35 @@ function App() {
       });
   }, []);
 
+  if (currentPage === 'login') {
+    return <LoginPage onNavigate={(page) => setCurrentPage(page)} />;
+  }
+
+  if (currentPage === 'signup') {
+    return <SignupPage onNavigate={(page) => setCurrentPage(page)} />;
+  }
+
   return (
     <>
+      <nav style={{ padding: '10px 20px', background: '#1a1a1a', display: 'flex', gap: '16px', alignItems: 'center' }}>
+        <button onClick={() => setCurrentPage('events')}>Browse Events</button>
+        {isAuthenticated ? (
+          <>
+            <button onClick={() => setCurrentPage('reservations')}>My Reservations</button>
+            {user?.role === 'ADMIN' && (
+              <button onClick={() => setCurrentPage('admin')}>Admin Dashboard</button>
+            )}
+            <span style={{ marginLeft: 'auto', fontSize: '0.85em' }}>{user?.email}</span>
+            <button onClick={logout}>Logout</button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => setCurrentPage('login')}>Log In</button>
+            <button onClick={() => setCurrentPage('signup')}>Sign Up</button>
+          </>
+        )}
+      </nav>
+
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
@@ -75,6 +105,14 @@ function App() {
       <section id="spacer"></section>
     </>
   )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }
 
 export default App

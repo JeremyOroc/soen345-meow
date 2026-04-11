@@ -5,7 +5,7 @@ import App from '../App';
 describe('App Component', () => {
   it('should render the Browse Events title', () => {
     render(<App />);
-    const titleElement = screen.getByText(/Browse Events/i);
+    const titleElement = screen.getByRole('heading', { name: /Browse Events/i, level: 1 });
     expect(titleElement).toBeInTheDocument();
   });
 
