@@ -2,8 +2,10 @@ package com.soen345.meow.service;
 
 import com.soen345.meow.entity.Event;
 import com.soen345.meow.entity.Reservation;
+import com.soen345.meow.entity.User;
 import com.soen345.meow.repository.EventRepository;
 import com.soen345.meow.repository.ReservationRepository;
+import com.soen345.meow.repository.UserRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +18,19 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public ReservationService(ReservationRepository reservationRepository, EventRepository eventRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            EventRepository eventRepository,
+            UserRepository userRepository,
+            NotificationService notificationService
+    ) {
         this.reservationRepository = reservationRepository;
         this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -51,7 +62,9 @@ public class ReservationService {
         reservation.setStatus("CONFIRMED");
         reservation.setReservedAt(LocalDateTime.now());
 
-        return reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        sendConfirmationEmail(userId, event, savedReservation);
+        return savedReservation;
     }
 
     @Transactional
@@ -81,5 +94,28 @@ public class ReservationService {
 
     public List<Reservation> getReservationsForUser(Long userId) {
         return reservationRepository.findByUserId(userId);
+    }
+
+    private void sendConfirmationEmail(Long userId, Event event, Reservation reservation) {
+        userRepository.findById(userId)
+                .map(User::getEmail)
+                .filter(email -> email != null && !email.isBlank())
+                .ifPresent(email -> notificationService.sendBookingConfirmation(
+                        email,
+                        event.getTitle(),
+                        reservation.getId(),
+                        parseEventDate(event.getEventDatetime())
+                ));
+    }
+
+    private LocalDateTime parseEventDate(String eventDatetime) {
+        if (eventDatetime == null || eventDatetime.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDateTime.parse(eventDatetime);
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }
