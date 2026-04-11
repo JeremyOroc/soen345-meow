@@ -25,3 +25,42 @@ In addition to unit testing, we will perform functional and acceptance testing t
 Continuous Integration (CI) will play a key role in our testing strategy. All tests will run automatically through GitHub Actions on every push and pull request. This ensures that new changes do not break existing functionality and helps maintain code quality as the project evolves.
 
 Overall, our testing approach aims to ensure correctness, reliability, and maintainability while aligning with the quality assurance principles emphasized in SOEN 345.
+
+## Deployment (NFR-2)
+
+This project supports cloud deployment for backend and frontend services.
+
+### Backend (Railway)
+
+- Service root directory: `backend/`
+- Start command: `./gradlew bootRun`
+- Required environment variables:
+	- `SPRING_PROFILES_ACTIVE=prod`
+	- `JWT_SECRET=<secure-random-value>`
+	- `DATABASE_URL=<provider-db-url>` (optional if keeping SQLite)
+	- `DB_DRIVER` and `HIBERNATE_DIALECT` (optional overrides)
+	- `MAILTRAP_USERNAME`, `MAILTRAP_PASSWORD` (if Mailtrap is used in cloud)
+
+`backend/src/main/resources/application-prod.properties` contains the production profile defaults and env-var mapping.
+
+### Frontend (Vercel or Railway Static Service)
+
+- Service root directory: `frontend/`
+- Build command: `npm run build`
+- Output directory: `dist/`
+
+### CI Deploy Hooks
+
+`.github/workflows/ci.yml` triggers deploy hooks on push to `main` after backend/frontend builds pass.
+
+Add these GitHub repository secrets:
+
+- `RAILWAY_DEPLOY_HOOK_URL`
+- `FRONTEND_DEPLOY_HOOK_URL`
+
+If either secret is missing, the deploy job is skipped without failing CI.
+
+### Live URLs
+
+- Backend API URL: `TBD`
+- Frontend URL: `TBD`
