@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { apiUrl } from '../api';
 
+const CATEGORIES = ['Movies', 'Concerts', 'Travel', 'Sports'];
+
 interface EventItem {
   id: number;
   title: string;
@@ -180,14 +182,17 @@ export default function AdminDashboard() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <label style={{ fontSize: '0.8em', fontWeight: 600 }}>Category</label>
-            <input
-              type="text"
-              placeholder="e.g. Concerts"
+            <select
               value={form.category}
               onChange={e => updateField('category', e.target.value)}
               required
               style={inputStyle}
-            />
+            >
+              <option value="">Select category</option>
+              {CATEGORIES.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <label style={{ fontSize: '0.8em', fontWeight: 600 }}>Location</label>
