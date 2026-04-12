@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
+import { apiUrl } from '../api';
 
 interface LoginPageProps {
   onNavigate: (page: string) => void;
@@ -15,7 +16,7 @@ export default function LoginPage({ onNavigate }: LoginPageProps) {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('http://localhost:8080/api/auth/login', {
+      const res = await fetch(apiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

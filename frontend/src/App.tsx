@@ -6,6 +6,7 @@ import './App.css'
 import { AuthProvider, useAuth } from './auth/AuthContext'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import { apiUrl } from './api'
 
 interface EventItem {
   id: number;
@@ -22,7 +23,7 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/events')
+    fetch(apiUrl('/api/events'))
       .then(res => res.json())
       .then(data => {
         setEvents(data);
