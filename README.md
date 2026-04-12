@@ -48,6 +48,8 @@ This project supports cloud deployment for backend and frontend services.
 - Service root directory: `frontend/`
 - Build command: `npm run build`
 - Output directory: `dist/`
+- Environment variable:
+	- `VITE_API_BASE_URL=https://soen345-meow-production.up.railway.app`
 
 ### CI Deploy Hooks
 
@@ -62,5 +64,5 @@ If either secret is missing, the deploy job is skipped without failing CI.
 
 ### Live URLs
 
-- Backend API URL: `TBD`
-- Frontend URL: `TBD`
+- Backend API URL: `https://soen345-meow-production.up.railway.app/`
+- Frontend URL: `https://soen345-meow.vercel.app/`

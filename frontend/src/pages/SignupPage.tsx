@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { apiUrl } from '../api';
 
 interface SignupPageProps {
   onNavigate: (page: string) => void;
@@ -18,7 +19,7 @@ export default function SignupPage({ onNavigate }: SignupPageProps) {
       return;
     }
     try {
-      const res = await fetch('http://localhost:8080/api/auth/signup', {
+      const res = await fetch(apiUrl('/api/auth/signup'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
