@@ -62,5 +62,5 @@ If either secret is missing, the deploy job is skipped without failing CI.
 
 ### Live URLs
 
-- Backend API URL: `TBD`
-- Frontend URL: `TBD`
+- Backend API URL: `https://soen345-meow-production.up.railway.app/`
+- Frontend URL: `TBD (pending Vercel deployment by repo owner/member)`
