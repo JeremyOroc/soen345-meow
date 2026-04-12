@@ -13,7 +13,7 @@ interface EventItem {
   status: string;
 }
 
-const CATEGORIES = ['All', 'Movies', 'Concerts', 'Travel', 'Sports'];
+const CATEGORIES = ['All', 'Movies', 'Concerts', 'Travel', 'Sports', 'Theatre', 'Festivals', 'Food & Drink', 'Tech', 'Wellness', 'Other'];
 
 export default function EventsPage() {
   const { isAuthenticated, token } = useAuth();

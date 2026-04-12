@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { apiUrl } from '../api';
 
-const CATEGORIES = ['Movies', 'Concerts', 'Travel', 'Sports'];
+const CATEGORIES = ['Movies', 'Concerts', 'Travel', 'Sports', 'Theatre', 'Festivals', 'Food & Drink', 'Tech', 'Wellness', 'Other'];
 
 interface EventItem {
   id: number;
