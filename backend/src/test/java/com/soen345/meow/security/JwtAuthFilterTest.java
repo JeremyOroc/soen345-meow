@@ -66,7 +66,7 @@ class JwtAuthFilterTest {
         User user = new User("admin@example.com", null, passwordEncoder.encode("password123"), "ADMIN");
         User savedUser = userRepository.save(user);
 
-        String token = jwtUtil.generateToken("admin@example.com");
+        String token = jwtUtil.generateToken("admin@example.com", "ADMIN");
 
         mockMvc.perform(get("/api/admin/test")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
