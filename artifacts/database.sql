@@ -1,170 +1,79 @@
-CREATE TABLE [users] (
-  [id] integer PRIMARY KEY IDENTITY(1, 1),
-  [email] text UNIQUE,
-  [phone] text UNIQUE,
-  [password_hash] text NOT NULL,
-  [role] text NOT NULL,
-  [created_at] text NOT NULL
-)
-GO
+-- SQLite schema for the Ticket Reservation System
+-- Enable these pragmas at connection time (Hibernate does this via application.properties):
+--   PRAGMA foreign_keys = ON;
+--   PRAGMA journal_mode = WAL;
+--   PRAGMA busy_timeout = 5000;
 
-CREATE TABLE [events] (
-  [id] integer PRIMARY KEY IDENTITY(1, 1),
-  [title] text NOT NULL,
-  [category] text NOT NULL,
-  [location] text NOT NULL,
-  [event_datetime] text NOT NULL,
-  [capacity] integer NOT NULL,
-  [available_seats] integer NOT NULL,
-  [status] text NOT NULL,
-  [created_by_admin_id] integer NOT NULL,
-  [created_at] text NOT NULL,
-  [updated_at] text NOT NULL
-)
-GO
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT UNIQUE,
+  phone TEXT UNIQUE,
+  password_hash TEXT NOT NULL,
+  -- role is CUSTOMER or ADMIN
+  role TEXT NOT NULL,
+  created_at TEXT NOT NULL
+  -- at least one of email or phone must be provided (enforced by application)
+);
 
-CREATE TABLE [reservations] (
-  [id] integer PRIMARY KEY IDENTITY(1, 1),
-  [user_id] integer NOT NULL,
-  [event_id] integer NOT NULL,
-  [ticket_quantity] integer NOT NULL,
-  [status] text NOT NULL,
-  [reserved_at] text NOT NULL,
-  [cancelled_at] text
-)
-GO
+CREATE TABLE events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  category TEXT NOT NULL,
+  location TEXT NOT NULL,
+  event_datetime TEXT NOT NULL,
+  -- capacity must be >= 1 (enforced by application)
+  capacity INTEGER NOT NULL,
+  -- available_seats must be between 0 and capacity
+  available_seats INTEGER NOT NULL,
+  -- status is ACTIVE or CANCELLED
+  status TEXT NOT NULL,
+  created_by_admin_id INTEGER NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (created_by_admin_id) REFERENCES users(id)
+);
 
-CREATE TABLE [notification_logs] (
-  [id] integer PRIMARY KEY IDENTITY(1, 1),
-  [user_id] integer NOT NULL,
-  [reservation_id] integer,
-  [event_id] integer,
-  [channel] text NOT NULL,
-  [message_type] text NOT NULL,
-  [delivery_status] text NOT NULL,
-  [created_at] text NOT NULL
-)
-GO
+CREATE TABLE reservations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  event_id INTEGER NOT NULL,
+  -- ticket_quantity must be >= 1 (enforced by application)
+  ticket_quantity INTEGER NOT NULL,
+  -- status is CONFIRMED or CANCELLED
+  status TEXT NOT NULL,
+  reserved_at TEXT NOT NULL,
+  cancelled_at TEXT,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (event_id) REFERENCES events(id)
+);
 
-CREATE INDEX [events_index_0] ON [events] ("event_datetime")
-GO
+CREATE TABLE notification_logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  -- recipient is the email address of the person being notified
+  recipient TEXT NOT NULL,
+  event_title TEXT,
+  -- channel is EMAIL or SMS
+  channel TEXT NOT NULL,
+  -- message_type is BOOKING_CONFIRMATION, RESERVATION_CANCELLED, or EVENT_CANCELLED
+  message_type TEXT NOT NULL,
+  -- delivery_status is SENT or FAILED
+  delivery_status TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
 
-CREATE INDEX [events_index_1] ON [events] ("location")
-GO
+-- indexes on events
+CREATE INDEX events_event_datetime ON events (event_datetime);
+CREATE INDEX events_location ON events (location);
+CREATE INDEX events_category ON events (category);
+CREATE INDEX events_status ON events (status);
+CREATE INDEX events_composite ON events (event_datetime, location, category);
 
-CREATE INDEX [events_index_2] ON [events] ("category")
-GO
+-- indexes on reservations
+CREATE INDEX reservations_user_id ON reservations (user_id);
+CREATE INDEX reservations_event_id ON reservations (event_id);
+CREATE INDEX reservations_status ON reservations (status);
 
-CREATE INDEX [events_index_3] ON [events] ("status")
-GO
+-- indexes on notification_logs
+CREATE INDEX notification_logs_recipient ON notification_logs (recipient);
+CREATE INDEX notification_logs_created_at ON notification_logs (created_at);
 
-CREATE INDEX [events_index_4] ON [events] ("event_datetime", "location", "category")
-GO
-
-CREATE INDEX [reservations_index_5] ON [reservations] ("user_id")
-GO
-
-CREATE INDEX [reservations_index_6] ON [reservations] ("event_id")
-GO
-
-CREATE INDEX [reservations_index_7] ON [reservations] ("status")
-GO
-
-CREATE INDEX [notification_logs_index_8] ON [notification_logs] ("user_id")
-GO
-
-CREATE INDEX [notification_logs_index_9] ON [notification_logs] ("reservation_id")
-GO
-
-CREATE INDEX [notification_logs_index_10] ON [notification_logs] ("event_id")
-GO
-
-CREATE INDEX [notification_logs_index_11] ON [notification_logs] ("created_at")
-GO
-
-EXEC sp_addextendedproperty
-@name = N'Table_Description',
-@value = 'Application enforces at least one of email or phone during registration.',
-@level0type = N'Schema', @level0name = 'dbo',
-@level1type = N'Table',  @level1name = 'users';
-GO
-
-EXEC sp_addextendedproperty
-@name = N'Column_Description',
-@value = 'CUSTOMER|ADMIN',
-@level0type = N'Schema', @level0name = 'dbo',
-@level1type = N'Table',  @level1name = 'users',
-@level2type = N'Column', @level2name = 'role';
-GO
-
-EXEC sp_addextendedproperty
-@name = N'Table_Description',
-@value = 'Application/DB constraints: capacity >= 1 and available_seats between 0 and capacity.',
-@level0type = N'Schema', @level0name = 'dbo',
-@level1type = N'Table',  @level1name = 'events';
-GO
-
-EXEC sp_addextendedproperty
-@name = N'Column_Description',
-@value = 'ACTIVE|CANCELLED',
-@level0type = N'Schema', @level0name = 'dbo',
-@level1type = N'Table',  @level1name = 'events',
-@level2type = N'Column', @level2name = 'status';
-GO
-
-EXEC sp_addextendedproperty
-@name = N'Table_Description',
-@value = 'Application/DB constraints: ticket_quantity >= 1.',
-@level0type = N'Schema', @level0name = 'dbo',
-@level1type = N'Table',  @level1name = 'reservations';
-GO
-
-EXEC sp_addextendedproperty
-@name = N'Column_Description',
-@value = 'CONFIRMED|CANCELLED',
-@level0type = N'Schema', @level0name = 'dbo',
-@level1type = N'Table',  @level1name = 'reservations',
-@level2type = N'Column', @level2name = 'status';
-GO
-
-EXEC sp_addextendedproperty
-@name = N'Column_Description',
-@value = 'EMAIL|SMS',
-@level0type = N'Schema', @level0name = 'dbo',
-@level1type = N'Table',  @level1name = 'notification_logs',
-@level2type = N'Column', @level2name = 'channel';
-GO
-
-EXEC sp_addextendedproperty
-@name = N'Column_Description',
-@value = 'RESERVATION_CONFIRMED|RESERVATION_CANCELLED|EVENT_CANCELLED',
-@level0type = N'Schema', @level0name = 'dbo',
-@level1type = N'Table',  @level1name = 'notification_logs',
-@level2type = N'Column', @level2name = 'message_type';
-GO
-
-EXEC sp_addextendedproperty
-@name = N'Column_Description',
-@value = 'SENT|FAILED',
-@level0type = N'Schema', @level0name = 'dbo',
-@level1type = N'Table',  @level1name = 'notification_logs',
-@level2type = N'Column', @level2name = 'delivery_status';
-GO
-
-ALTER TABLE [events] ADD FOREIGN KEY ([created_by_admin_id]) REFERENCES [users] ([id])
-GO
-
-ALTER TABLE [reservations] ADD FOREIGN KEY ([user_id]) REFERENCES [users] ([id])
-GO
-
-ALTER TABLE [reservations] ADD FOREIGN KEY ([event_id]) REFERENCES [events] ([id])
-GO
-
-ALTER TABLE [notification_logs] ADD FOREIGN KEY ([user_id]) REFERENCES [users] ([id])
-GO
-
-ALTER TABLE [notification_logs] ADD FOREIGN KEY ([reservation_id]) REFERENCES [reservations] ([id])
-GO
-
-ALTER TABLE [notification_logs] ADD FOREIGN KEY ([event_id]) REFERENCES [events] ([id])
-GO
