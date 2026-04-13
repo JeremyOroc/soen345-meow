@@ -17,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -46,8 +47,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                String email = jwtUtil.getEmailFromToken(token);
-                userRepository.findByEmail(email).ifPresent(user -> setAuthentication(user));
+                String subject = jwtUtil.getEmailFromToken(token);
+                Optional<User> userOpt = userRepository.findByEmail(subject);
+                if (userOpt.isEmpty()) {
+                    userOpt = userRepository.findByPhone(subject);
+                }
+                userOpt.ifPresent(this::setAuthentication);
             }
         } catch (Exception ignored) {
             SecurityContextHolder.clearContext();
