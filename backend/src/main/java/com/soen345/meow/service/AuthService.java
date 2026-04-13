@@ -76,7 +76,7 @@ public class AuthService {
         }
 
         // Generate JWT token
-        String token = jwtUtil.generateToken(user.getEmail() != null ? user.getEmail() : user.getPhone());
+        String token = jwtUtil.generateToken(user.getEmail() != null ? user.getEmail() : user.getPhone(), user.getRole());
 
         return new AuthResponse(token, "Login successful");
     }

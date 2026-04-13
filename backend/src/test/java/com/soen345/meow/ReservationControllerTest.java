@@ -68,7 +68,7 @@ class ReservationControllerTest {
     void shouldReturn201WhenReservationCreated() throws Exception {
         User user = userRepository.save(new User("customer@example.com", null, passwordEncoder.encode("password123"), "CUSTOMER"));
         Event event = saveEvent(10);
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
 
         CreateReservationRequest request = new CreateReservationRequest();
         request.setEventId(event.getId());
@@ -91,7 +91,7 @@ class ReservationControllerTest {
     void shouldReturn409WhenNoSeatsAvailable() throws Exception {
         User user = userRepository.save(new User("customer@example.com", null, passwordEncoder.encode("password123"), "CUSTOMER"));
         Event event = saveEvent(1);
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
 
         CreateReservationRequest request = new CreateReservationRequest();
         request.setEventId(event.getId());
@@ -135,7 +135,7 @@ class ReservationControllerTest {
         event.setAvailableSeats(8);
         eventRepository.save(event);
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
 
         mockMvc.perform(delete("/api/reservations/{id}", reservation.getId())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))

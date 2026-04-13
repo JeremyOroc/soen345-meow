@@ -132,7 +132,7 @@ class AdminEventControllerTest {
 
     private String tokenFor(String email, String role) {
         userRepository.save(new User(email, null, passwordEncoder.encode("password123"), role));
-        return jwtUtil.generateToken(email);
+        return jwtUtil.generateToken(email, role);
     }
 
     private Map<String, Object> validCreateRequest() {
