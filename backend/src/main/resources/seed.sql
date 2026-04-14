@@ -3,6 +3,7 @@
 INSERT OR IGNORE INTO users (id, email, phone, password_hash, role, created_at)
 VALUES
   (1, 'admin@meow.com', NULL, '$2a$10$EWxVjASXOshLl5wPJ9W/puUvZ.qBs.McuJM.D9lqjydtffoNuYyvG', 'ADMIN', 1767276000000),
+  (5, 'hawadjan.1@gmail.com', NULL, '$2a$10$EWxVjASXOshLl5wPJ9W/puUvZ.qBs.McuJM.D9lqjydtffoNuYyvG', 'ADMIN', 1767276000000),
   (2, 'alice@meow.com', '5145551001', '$2a$10$EWxVjASXOshLl5wPJ9W/puUvZ.qBs.McuJM.D9lqjydtffoNuYyvG', 'CUSTOMER', 1767367800000),
   (3, 'bob@meow.com', '5145551002', '$2a$10$EWxVjASXOshLl5wPJ9W/puUvZ.qBs.McuJM.D9lqjydtffoNuYyvG', 'CUSTOMER', 1767456900000),
   (4, 'charlie@meow.com', '5145551003', '$2a$10$EWxVjASXOshLl5wPJ9W/puUvZ.qBs.McuJM.D9lqjydtffoNuYyvG', 'CUSTOMER', 1767555900000);
