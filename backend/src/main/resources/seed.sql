@@ -10,16 +10,16 @@ VALUES
 -- Seed default events.
 INSERT OR IGNORE INTO events (id, title, category, location, event_datetime, capacity, available_seats, status)
 VALUES
-  (1, 'Montreal Tech Meetup', 'Technology', 'Montreal', '2026-05-10T18:30:00', 120, 120, 'ACTIVE'),
-  (2, 'Spring Boot Workshop', 'Education', 'Concordia University', '2026-05-15T14:00:00', 80, 80, 'ACTIVE'),
-  (3, 'Indie Music Night', 'Entertainment', 'Plateau Mont-Royal', '2026-05-22T20:00:00', 200, 200, 'ACTIVE'),
-  (4, 'Startup Pitch Evening', 'Business', 'Downtown Montreal', '2026-06-01T19:00:00', 150, 150, 'ACTIVE'),
-  (5, 'Community Cat Cafe Event', 'Community', 'Mile End', '2026-06-08T11:00:00', 60, 60, 'ACTIVE'),
-  (6, 'Winter Art Expo', 'Arts', 'Old Port', '2026-01-18T13:00:00', 90, 24, 'COMPLETED'),
-  (7, 'Open Source Hack Night', 'Technology', 'Montreal', '2025-11-12T18:00:00', 110, 0, 'COMPLETED'),
-  (8, 'Jazz in the Park', 'Entertainment', 'Parc La Fontaine', '2025-08-03T19:30:00', 300, 0, 'COMPLETED'),
-  (9, 'AI Product Meetup', 'Business', 'Downtown Montreal', '2026-07-19T18:45:00', 140, 140, 'ACTIVE'),
-  (10, 'Sunday Farmers Market', 'Community', 'Jean-Talon Market', '2026-09-07T10:00:00', 500, 500, 'ACTIVE');
+  (1, 'Montreal Tech Meetup', 'Tech', 'Montreal', '2026-05-10T18:30:00', 120, 120, 'ACTIVE'),
+  (2, 'Spring Boot Workshop', 'Wellness', 'Concordia University', '2026-05-15T14:00:00', 80, 80, 'ACTIVE'),
+  (3, 'Indie Music Night', 'Concerts', 'Plateau Mont-Royal', '2026-05-22T20:00:00', 200, 200, 'ACTIVE'),
+  (4, 'Startup Pitch Evening', 'Other', 'Downtown Montreal', '2026-06-01T19:00:00', 150, 150, 'ACTIVE'),
+  (5, 'Community Cat Cafe Event', 'Food & Drink', 'Mile End', '2026-06-08T11:00:00', 60, 60, 'ACTIVE'),
+  (6, 'Winter Art Expo', 'Theatre', 'Old Port', '2026-01-18T13:00:00', 90, 24, 'COMPLETED'),
+  (7, 'Open Source Hack Night', 'Festivals', 'Montreal', '2025-11-12T18:00:00', 110, 0, 'COMPLETED'),
+  (8, 'Jazz in the Park', 'Movies', 'Parc La Fontaine', '2025-08-03T19:30:00', 300, 0, 'COMPLETED'),
+  (9, 'AI Product Meetup', 'Travel', 'Downtown Montreal', '2026-07-19T18:45:00', 140, 140, 'ACTIVE'),
+  (10, 'Sunday Farmers Market', 'Sports', 'Jean-Talon Market', '2026-09-07T10:00:00', 500, 500, 'ACTIVE');
 
 -- Seed default reservations linked to seeded users/events.
 INSERT OR IGNORE INTO reservations (id, user_id, event_id, ticket_quantity, status, reserved_at, cancelled_at)
